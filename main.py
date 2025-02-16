@@ -1,14 +1,27 @@
-import pgeocode
 import requests
+import json
+import math
 
-api_key = "e2a92538221d485a56aae5456e317793"
+def convert_to_f(temp):
+    return (temp * 9/5) + 32
 
-zip_code = input("Enter zip code: ")
-nomi = pgeocode.Nominatim('us')
-query = nomi.query_postal_code(zip_code)
-lat = query["latitude"]
-lon = query["longitude"]
+api_key = ""
 
-x = requests.get("https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={e2a92538221d485a56aae5456e317793}")
+location = input("Enter city: ")
 
-print(x)
+url = f'https://api.tomorrow.io/v4/weather/realtime?location={location}&apikey={api_key}'
+
+headers = { "accept": "application/json" }
+
+response = requests.get(url, headers=headers)
+
+json_data = response.json()
+
+temperature = str(round(convert_to_f(json_data["data"]["values"]["temperature"])))
+humidity = json_data["data"]["values"]["humidity"]
+wind = json_data["data"]["values"]["windGust"]
+
+print("\nWeather in " + location + ": ")
+print("Temp: " + temperature)
+print("Humidity: " + str(humidity) + "%")
+print("Wind: " + str(math.ceil(wind)))
